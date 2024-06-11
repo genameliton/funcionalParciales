@@ -98,7 +98,7 @@ gema2 = UnaGema "Perla" 30 (relajada 100)
 -- 3 --
 
 leGanaAOtra :: Situacion -> Gema -> Gema -> Bool
-leGanaAOtra situacion gem1 gem2 = fuerza gema1 >= fuerza gema2 && situacionMejorQueOtra (personalidad gem1 situacion) (personalidad gem2 situacion)
+leGanaAOtra situacion gem1 gem2 = leGanaEnFuerza gem1 gem2 && situacionMejorQueOtra (personalidad gem1 situacion) (personalidad gem2 situacion)
 
 leGanaEnFuerza :: Gema -> Gema -> Bool
 leGanaEnFuerza gem1 gem2 = fuerza gem1 >= fuerza gem2
