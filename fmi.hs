@@ -83,7 +83,22 @@ dePeorAMejor _ [receta] = True
 dePeorAMejor pais (receta1:receta2:recetas) = pbi (receta1 pais) < pbi (receta2 pais) && dePeorAMejor pais recetas 
 
 -- PUNTO 6 -- 
+{-
+Si un país tiene infinitos recursos naturales, modelado con esta función
+recursosNaturalesInfinitos :: [String]
+recursosNaturalesInfinitos = "Energia" : recursosNaturalesInfinitos
+¿qué sucede evaluamos la función 4a con ese país? 
+¿y con la 4b?
+Justifique ambos puntos relacionándolos con algún concepto.
+-}
 
 recursosNaturalesInfinitos :: [String]
 recursosNaturalesInfinitos = "Energia" : recursosNaturalesInfinitos
 
+namibia2 :: Pais
+namibia2 = UnPais 4140 400000 650000 recursosNaturalesInfinitos 50000000
+
+{-
+cuando evaluamos con el 4a no se puede, ya que busca en todos los recursos uno que coincida con "Petróleo"  y como es una lista infinita nunca va a terminar de evaluar.
+ En cambio cuando aplicamos el 4b, como solo se fija en el FMI no evalua la lista infinita, toma lo que le importa (lazy evaluation) y por ende, no rompe.
+-} 
