@@ -37,8 +37,8 @@ fiat = UnAuto "Fiat" "600" (50, 27) 44 0
 
 -- Punto 2 --
 
-estadoDeSalud :: Auto -> Bool
-estadoDeSalud auto = desgasteChasis auto < 40 && desgasteRuedas auto < 60
+estaEnBuenEstado :: Auto -> Bool
+estaEnBuenEstado auto = desgasteChasis auto < 40 && desgasteRuedas auto < 60
 
 desgasteChasis :: Auto -> Float
 desgasteChasis = fst . desgaste
@@ -47,7 +47,7 @@ desgasteRuedas :: Auto -> Float
 desgasteRuedas = snd . desgaste
 
 noDaMas :: Auto -> Bool
-noDaMas auto = desgasteChasis auto > 80 || desgasteRuedas auto > 80
+noDaMas auto = not (desgasteChasis auto < 80 && desgasteRuedas auto < 80)
 
 -- Punto 3 --
 
@@ -87,8 +87,8 @@ curvaTranca = curva 110 550
 tramoRecto :: Float -> Tramo
 tramoRecto longitud auto = sumarTiempo tiempoAVariar . cambiarDesgasteChasis bajaDeChasis $ auto
     where 
-        tiempoAVariar = longitud / (velocidadMaxima auto)
-        bajaDeChasis = 1/100
+        tiempoAVariar = longitud / velocidadMaxima auto
+        bajaDeChasis = longitud / 100
 
 tramoRectoClassic :: Tramo
 tramoRectoClassic = tramoRecto 750 
@@ -100,14 +100,14 @@ tramito = tramoRecto 280
 
 tramoBoxes :: Float -> Tramo
 tramoBoxes longitud auto
-    | estadoDeSalud auto = sumarTiempo longitud auto
-    | otherwise          = sumarTiempo 10 auto
+    | estaEnBuenEstado auto = sumarTiempo longitud auto
+    | otherwise          = sumarTiempo 10 . repararAuto $ auto
 
 -- d --
 
 estaMojada :: Tramo -> Tramo
-estaMojada tramo = sumarTiempo mitadTiempo . tramo
-    where mitadTiempo = (tiempoDeCarrera . tramo) fiat / 2
+estaMojada tramo auto = sumarTiempo mitadTiempo . tramo $ auto
+    where mitadTiempo = ((tiempoDeCarrera . tramo) auto - tiempoDeCarrera auto)/ 2
 
 -- e --
 
@@ -145,10 +145,15 @@ peganLaVuelta pista autos = map (pegaLaVuelta pista) autos
 
 data Carrera = UnaCarrera {
     pista :: Pista,
-    numeroDeVueltas :: Float
+    numeroDeVueltas :: Int
 }
 
 -- b --
 
 tourBuenosAires :: Carrera
 tourBuenosAires = UnaCarrera superPista 20
+
+-- c --
+
+hacerCarrera :: [Auto] -> Carrera -> [[Auto]]
+hacerCarrera autos carrera = take (numeroDeVueltas carrera) . iterate (peganLaVuelta (pista carrera)) $ autos
